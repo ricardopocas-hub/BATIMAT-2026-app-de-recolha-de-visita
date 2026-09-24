@@ -32,10 +32,37 @@ img.preview{width:100%;max-height:300px;object-fit:cover;border-radius:8px;margi
 <label>Stand</label><input id="stand" placeholder="Ex.: H1-R010">
 <label>Empresa</label><input id="company">
 <label>Hall / área</label><input id="hall">
-<label>Categoria</label><input id="category">
+<label>Categoria</label>
+<select id="category">
+<option value="Offsite">Offsite</option>
+<option value="Pré-fabricação">Pré-fabricação</option>
+<option value="DFMA">DFMA</option>
+<option value="Estruturas">Estruturas</option>
+<option value="Fachadas">Fachadas</option>
+<option value="Módulos">Módulos</option>
+<option value="Casas de banho">Casas de banho</option>
+<option value="MEP racks">MEP racks</option>
+<option value="Shafts">Shafts</option>
+<option value="Ligações">Ligações</option>
+<option value="Robótica/automação">Robótica/automação</option>
+<option value="BIM/DFMA">BIM/DFMA</option>
+<option value="Outros sistemas industrializados">Outros sistemas industrializados</option>
+<option value="Outra">Outra</option>
+</select>
+<div id="otherCategoryBox" class="hidden">
+<label>Outra categoria</label><input id="otherCategory" placeholder="Escreva a categoria">
+</div>
 <label>Contacto / pessoa</label><input id="contact">
 <label>Notas</label>
-<textarea id="notes" placeholder="Escreva ou use o microfone do teclado Samsung para ditar."></textarea>
+<textarea id="notes" placeholder="O que fazem / produto ou sistema:
+• Como funciona e o que é industrializado
+• Produção / engenharia / montagem
+• Projetos ou referências
+• BIM / DFMA / integração com projeto
+• O que achei interessante para a Gabriel Couto
+• Perguntas, contactos e informações relevantes
+
+Pode escrever ou usar o microfone do teclado Samsung para ditar."></textarea>
 <label>Relevância</label>
 <select id="relevance"><option>Alta</option><option>Média</option><option>Baixa</option></select>
 <label>Potencial de parceria</label>
@@ -82,11 +109,17 @@ function tx(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE
 function allVisits(){return new Promise((res,rej)=>{let r=tx().getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
 function addVisit(v){return new Promise((res,rej)=>{let r=tx('readwrite').add(v);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 
+document.getElementById('category').onchange=()=>{
+ const show=document.getElementById('category').value==='Outra';
+ document.getElementById('otherCategoryBox').classList.toggle('hidden',!show);
+ if(!show) document.getElementById('otherCategory').value='';
+};
+
 function val(id){return document.getElementById(id).value}
 function clearForm(){
- ['code','stand','company','hall','category','contact','notes','nextStep'].forEach(id=>document.getElementById(id).value='');
+ ['code','stand','company','hall','contact','notes','nextStep','otherCategory'].forEach(id=>document.getElementById(id).value='');
  document.getElementById('relevance').value='Alta';document.getElementById('partnership').value='Alto';
- photos=[];audioData=null;document.getElementById('audioBox').innerHTML='';document.getElementById('audioStatus').textContent='';
+ document.getElementById('category').value='Offsite';document.getElementById('otherCategoryBox').classList.add('hidden');photos=[];audioData=null;document.getElementById('audioBox').innerHTML='';document.getElementById('audioStatus').textContent='';
 }
 
 document.getElementById('photoBtn').onclick=()=>document.getElementById('photoInput').click();
@@ -129,7 +162,7 @@ document.getElementById('stopBtn').onclick=()=>{
 
 document.getElementById('saveBtn').onclick=async()=>{
  try{
-  const visit={createdAt:new Date().toISOString(),code:val('code'),stand:val('stand'),company:val('company'),hall:val('hall'),category:val('category'),contact:val('contact'),notes:val('notes'),relevance:val('relevance'),partnership:val('partnership'),nextStep:val('nextStep'),photos:[...photos],audioData:audioData};
+  const visit={createdAt:new Date().toISOString(),code:val('code'),stand:val('stand'),company:val('company'),hall:val('hall'),category:(val('category')==='Outra'?val('otherCategory'):val('category')),contact:val('contact'),notes:val('notes'),relevance:val('relevance'),partnership:val('partnership'),nextStep:val('nextStep'),photos:[...photos],audioData:audioData};
   await addVisit(visit);
   alert('Visita guardada.');
   clearForm(); renderVisits();
@@ -152,7 +185,7 @@ function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','
 document.getElementById('clearBtn').onclick=clearForm;
 document.getElementById('exportBtn').onclick=async()=>{
  const vs=await allVisits();
- const blob=new Blob([JSON.stringify({app:'BATIMAT 2026',version:4,exportedAt:new Date().toISOString(),visits:vs},null,2)],{type:'application/json'});
+ const blob=new Blob([JSON.stringify({app:'BATIMAT 2026',version:5,exportedAt:new Date().toISOString(),visits:vs},null,2)],{type:'application/json'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='BATIMAT_2026_visitas.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
 openDB().then(renderVisits);
