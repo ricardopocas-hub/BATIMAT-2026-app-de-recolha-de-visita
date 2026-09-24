@@ -1,60 +1,57 @@
 <!doctype html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<link rel="manifest" href="./manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest">
 <title>BATIMAT 2026</title>
 <style>
-body{font-family:Arial,sans-serif;margin:0;background:#f3f4f6;color:#111827}
-header{background:#111827;color:white;padding:18px}
-main{padding:14px;max-width:760px;margin:auto}
-.card{background:white;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 1px 4px #0002}
-label{display:block;font-weight:700;margin-top:10px}
-input,textarea,select{box-sizing:border-box;width:100%;padding:10px;margin-top:5px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px}
-textarea{min-height:120px}
-button{border:0;border-radius:9px;padding:11px 14px;margin:7px 4px 0 0;font-size:16px;font-weight:700}
-.primary{background:#111827;color:white}.secondary{background:#e5e7eb}.danger{background:#fee2e2;color:#991b1b}
-.visit{border-left:5px solid #111827}
-.small{font-size:13px;color:#64748b}
-audio{width:100%;margin-top:8px}
-img.preview{width:100%;max-height:300px;object-fit:cover;border-radius:8px;margin-top:8px}
-.hidden{display:none}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f4f6;color:#111827}
+header{background:#111827;color:#fff;padding:16px 18px;position:sticky;top:0;z-index:5}
+h1{font-size:22px;margin:0 0 4px}.sub{font-size:13px;opacity:.8}
+main{max-width:760px;margin:auto;padding:14px}.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px #0001}
+label{display:block;font-weight:700;font-size:13px;margin:10px 0 5px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:9px;font-size:16px;background:#fff}
+textarea{min-height:170px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:0;border-radius:9px;padding:11px 14px;font-size:15px;font-weight:700;cursor:pointer}
+.primary{background:#111827;color:#fff}.secondary{background:#e5e7eb;color:#111827}.danger{background:#fee2e2;color:#991b1b}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.row button{flex:1;min-width:130px}
+.status{font-size:13px;margin-top:8px;color:#374151}.small{font-size:12px;color:#6b7280}
+.visit{border:1px solid #e5e7eb;border-radius:10px;padding:11px;margin-top:9px}
+.visit strong{display:block}.thumbs{display:flex;gap:6px;overflow:auto;margin-top:8px}.thumbs img{width:70px;height:70px;object-fit:cover;border-radius:7px}
+audio{width:100%;margin-top:8px}.hidden{display:none}
+.photo-label{display:inline-block;background:#e5e7eb;padding:11px 14px;border-radius:9px;font-weight:700;cursor:pointer}
+#photos{display:none}
 </style>
 </head>
 <body>
-<header><h1>BATIMAT 2026</h1><div>Registo de visitas</div></header>
+<header><h1>BATIMAT 2026</h1><div class="sub">Visitas · fotos · áudio · exportação ZIP</div></header>
 <main>
-<div class="card">
-<h2>Nova visita</h2>
-<label>Código</label><input id="code" placeholder="Ex.: A01">
-<label>Stand</label><input id="stand" placeholder="Ex.: H1-R010">
-<label>Empresa</label><input id="company">
-<label>Hall / área</label><input id="hall">
-<label>Categoria</label>
-<select id="category">
-<option value="Offsite">Offsite</option>
-<option value="Pré-fabricação">Pré-fabricação</option>
-<option value="DFMA">DFMA</option>
-<option value="Estruturas">Estruturas</option>
-<option value="Fachadas">Fachadas</option>
-<option value="Módulos">Módulos</option>
-<option value="Casas de banho">Casas de banho</option>
-<option value="MEP racks">MEP racks</option>
-<option value="Shafts">Shafts</option>
-<option value="Ligações">Ligações</option>
-<option value="Robótica/automação">Robótica/automação</option>
-<option value="BIM/DFMA">BIM/DFMA</option>
-<option value="Outros sistemas industrializados">Outros sistemas industrializados</option>
-<option value="Outra">Outra</option>
-</select>
-<div id="otherCategoryBox" class="hidden">
-<label>Outra categoria</label><input id="otherCategory" placeholder="Escreva a categoria">
-</div>
-<label>Contacto / pessoa</label><input id="contact">
-<label>Notas</label>
-<textarea id="notes" placeholder="O que fazem / produto ou sistema:
+<section class="card">
+  <div class="grid">
+    <div><label for="code">Código</label><input id="code" placeholder="001"></div>
+    <div><label for="stand">Stand</label><input id="stand" placeholder="H1-R010"></div>
+  </div>
+  <label for="company">Empresa</label><input id="company" placeholder="Nome da empresa">
+  <div class="grid">
+    <div><label for="hall">Hall / área</label><input id="hall" placeholder="H1 / Off-Site"></div>
+    <div><label for="category">Categoria</label>
+      <select id="category">
+        <option value="">Selecionar…</option>
+        <option>Offsite</option><option>Pré-fabricação</option><option>DFMA</option>
+        <option>Estruturas</option><option>Fachadas</option><option>Módulos</option>
+        <option>Casas de banho</option><option>MEP racks</option><option>Shafts</option>
+        <option>Ligações</option><option>Robótica/automação</option><option>BIM/DFMA</option>
+        <option>Outros sistemas industrializados</option><option>Outra</option>
+      </select>
+    </div>
+  </div>
+  <div id="otherWrap" class="hidden"><label for="otherCategory">Outra categoria</label><input id="otherCategory" placeholder="Especificar"></div>
+  <label for="contact">Contacto / pessoa</label><input id="contact" placeholder="Nome, função, email, telefone…">
+  <label for="notes">Notas da visita</label>
+  <textarea id="notes" placeholder="O que fazem / produto ou sistema:
 • Como funciona e o que é industrializado
 • Produção / engenharia / montagem
 • Projetos ou referências
@@ -63,133 +60,169 @@ img.preview{width:100%;max-height:300px;object-fit:cover;border-radius:8px;margi
 • Perguntas, contactos e informações relevantes
 
 Pode escrever ou usar o microfone do teclado Samsung para ditar."></textarea>
-<label>Relevância</label>
-<select id="relevance"><option>Alta</option><option>Média</option><option>Baixa</option></select>
-<label>Potencial de parceria</label>
-<select id="partnership"><option>Alto</option><option>Médio</option><option>Baixo</option></select>
-<label>Próximo passo</label><input id="nextStep">
 
-<div>
-<button class="secondary" id="photoBtn">📷 Adicionar foto</button>
-<input class="hidden" id="photoInput" type="file" accept="image/*" capture="environment">
-</div>
+  <div class="grid">
+    <div><label for="relevance">Relevância</label><select id="relevance"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
+    <div><label for="partnership">Potencial de parceria</label><select id="partnership"><option>Alto</option><option>Médio</option><option>Baixo</option></select></div>
+  </div>
+  <label for="nextStep">Próximo passo</label><input id="nextStep" placeholder="Contactar, pedir documentação, reunião, etc.">
 
-<div>
-<button class="secondary" id="recordBtn">🎙️ Gravar áudio</button>
-<button class="danger hidden" id="stopBtn">⏹️ Parar gravação</button>
-</div>
-<div id="audioStatus" class="small"></div>
-<div id="audioBox"></div>
+  <label>Fotografias</label>
+  <label class="photo-label" for="photos">📷 Tirar / adicionar fotografias</label>
+  <input id="photos" type="file" accept="image/*" capture="environment" multiple>
+  <div id="photoPreview" class="thumbs"></div>
 
-<button class="primary" id="saveBtn">💾 Guardar visita</button>
-<button class="secondary" id="clearBtn">Limpar</button>
-</div>
+  <label>Áudio</label>
+  <div class="row">
+    <button id="recordBtn" class="secondary" type="button">🎙️ Gravar áudio</button>
+    <button id="stopBtn" class="danger" type="button" disabled>⏹ Parar</button>
+  </div>
+  <div id="audioStatus" class="status"></div>
+  <audio id="audioPreview" controls class="hidden"></audio>
 
-<div class="card">
-<h2>Visitas guardadas</h2>
-<div id="count" class="small">0 visitas</div>
-<div id="visits"></div>
-<button class="secondary" id="exportBtn">⬇️ Exportar JSON</button>
-</div>
+  <div class="row">
+    <button id="saveBtn" class="primary" type="button">💾 Guardar visita</button>
+    <button id="newBtn" class="secondary" type="button">＋ Nova visita</button>
+  </div>
+</section>
+
+<section class="card">
+  <strong>Exportação</strong>
+  <div class="row">
+    <button id="zipBtn" class="primary" type="button">📦 Exportar ZIP</button>
+    <button id="jsonBtn" class="secondary" type="button">📄 Exportar JSON</button>
+  </div>
+  <div class="small" style="margin-top:8px">O ZIP separa o JSON, as fotografias e os áudios em pastas. É a exportação recomendada.</div>
+</section>
+
+<section class="card">
+  <strong>Visitas guardadas</strong>
+  <div id="visitCount" class="small" style="margin-top:4px"></div>
+  <div id="visitList"></div>
+</section>
 </main>
 
 <script>
 const DB='batimat26db', STORE='visits';
-let db, photos=[], audioData=null, recorder=null, chunks=[], stream=null;
+let db, photos=[], audioData=null, recorder=null, chunks=[], editingId=null;
 
 function openDB(){
  return new Promise((resolve,reject)=>{
   const r=indexedDB.open(DB,1);
-  r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains(STORE)) e.target.result.createObjectStore(STORE,{keyPath:'id',autoIncrement:true});};
-  r.onsuccess=e=>{db=e.target.result;resolve(db)};
-  r.onerror=e=>reject(e);
+  r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id',autoIncrement:true})};
+  r.onsuccess=e=>{db=e.target.result;resolve(db)}; r.onerror=e=>reject(r.error);
  });
 }
-function tx(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE)}
-function allVisits(){return new Promise((res,rej)=>{let r=tx().getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
-function addVisit(v){return new Promise((res,rej)=>{let r=tx('readwrite').add(v);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function allVisits(){return new Promise((res,rej)=>{const r=db.transaction(STORE).objectStore(STORE).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function putVisit(v){return new Promise((res,rej)=>{const r=db.transaction(STORE,'readwrite').objectStore(STORE).put(v);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function deleteVisit(id){return new Promise((res,rej)=>{const r=db.transaction(STORE,'readwrite').objectStore(STORE).delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+const $=id=>document.getElementById(id);
+function catValue(){return $('category').value==='Outra' ? ($('otherCategory').value.trim()||'Outra') : $('category').value}
+$('category').onchange=()=> $('otherWrap').classList.toggle('hidden',$('category').value!=='Outra');
 
-document.getElementById('category').onchange=()=>{
- const show=document.getElementById('category').value==='Outra';
- document.getElementById('otherCategoryBox').classList.toggle('hidden',!show);
- if(!show) document.getElementById('otherCategory').value='';
+$('photos').onchange=async e=>{
+ const files=[...e.target.files];
+ photos=[];
+ for(const f of files) photos.push(await fileToDataURL(f));
+ renderPhotos();
 };
-
-function val(id){return document.getElementById(id).value}
-function clearForm(){
- ['code','stand','company','hall','contact','notes','nextStep','otherCategory'].forEach(id=>document.getElementById(id).value='');
- document.getElementById('relevance').value='Alta';document.getElementById('partnership').value='Alto';
- document.getElementById('category').value='Offsite';document.getElementById('otherCategoryBox').classList.add('hidden');photos=[];audioData=null;document.getElementById('audioBox').innerHTML='';document.getElementById('audioStatus').textContent='';
+function fileToDataURL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)})}
+function renderPhotos(){
+ $('photoPreview').innerHTML='';
+ photos.forEach((p,i)=>{const img=document.createElement('img');img.src=p;img.title='Fotografia '+(i+1);$('photoPreview').appendChild(img)});
 }
-
-document.getElementById('photoBtn').onclick=()=>document.getElementById('photoInput').click();
-document.getElementById('photoInput').onchange=async e=>{
- const f=e.target.files[0]; if(!f)return;
- const reader=new FileReader();reader.onload=()=>{photos.push(reader.result);renderPhotoPreview();};reader.readAsDataURL(f);
-};
-function renderPhotoPreview(){
- document.getElementById('audioBox').insertAdjacentHTML('beforebegin',
-  photos.length?'<div class="small">Fotos adicionadas: '+photos.length+'</div>':'');
-}
-
-document.getElementById('recordBtn').onclick=async()=>{
+$('recordBtn').onclick=async()=>{
  try{
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('O navegador não disponibiliza gravação de áudio.');
-  stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  const mime=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';
-  recorder=new MediaRecorder(stream,{mimeType:mime});chunks=[];
+  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  chunks=[]; recorder=new MediaRecorder(stream);
   recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
-  recorder.onstop=()=>{
-   const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});
-   const reader=new FileReader();
-   reader.onload=()=>{audioData=reader.result;document.getElementById('audioBox').innerHTML='<audio controls src="'+audioData+'"></audio>';document.getElementById('audioStatus').textContent='Áudio gravado. Agora prima “Guardar visita”.';};
-   reader.readAsDataURL(blob);
-   if(stream)stream.getTracks().forEach(t=>t.stop());
-  };
-  recorder.start();
-  document.getElementById('recordBtn').classList.add('hidden');
-  document.getElementById('stopBtn').classList.remove('hidden');
-  document.getElementById('audioStatus').textContent='A gravar…';
- }catch(e){
-  document.getElementById('audioStatus').textContent='Não foi possível gravar: '+e.message;
- }
+  recorder.onstop=async()=>{const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});audioData=await blobToDataURL(blob);$('audioPreview').src=audioData;$('audioPreview').classList.remove('hidden');$('audioStatus').textContent='Áudio gravado.';stream.getTracks().forEach(t=>t.stop())};
+  recorder.start();$('recordBtn').disabled=true;$('stopBtn').disabled=false;$('audioStatus').textContent='A gravar…';
+ }catch(e){$('audioStatus').textContent='Não foi possível aceder ao microfone: '+e.message}
 };
-document.getElementById('stopBtn').onclick=()=>{
- if(recorder && recorder.state!=='inactive') recorder.stop();
- document.getElementById('stopBtn').classList.add('hidden');
- document.getElementById('recordBtn').classList.remove('hidden');
+$('stopBtn').onclick=()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();$('recordBtn').disabled=false;$('stopBtn').disabled=true};
+function blobToDataURL(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b)})}
+
+function resetForm(){
+ editingId=null;['code','stand','company','hall','contact','nextStep','otherCategory'].forEach(x=>$(x).value='');
+ $('category').value='';$('relevance').value='Alta';$('partnership').value='Alto';$('notes').value='';
+ photos=[];audioData=null;$('photos').value='';renderPhotos();$('audioPreview').removeAttribute('src');$('audioPreview').classList.add('hidden');$('audioStatus').textContent='';
+}
+$('newBtn').onclick=resetForm;
+
+$('saveBtn').onclick=async()=>{
+ const v={createdAt:editingId?undefined:new Date().toISOString(),code:$('code').value.trim(),stand:$('stand').value.trim(),company:$('company').value.trim(),hall:$('hall').value.trim(),category:catValue(),contact:$('contact').value.trim(),notes:$('notes').value,relevance:$('relevance').value,partnership:$('partnership').value,nextStep:$('nextStep').value.trim(),photos,audioData};
+ if(editingId)v.id=editingId;
+ if(!v.company && !v.stand && !v.notes){alert('Preencha pelo menos a empresa, o stand ou as notas.');return}
+ await putVisit(v); resetForm(); await renderList(); alert('Visita guardada.');
 };
 
-document.getElementById('saveBtn').onclick=async()=>{
- try{
-  const visit={createdAt:new Date().toISOString(),code:val('code'),stand:val('stand'),company:val('company'),hall:val('hall'),category:(val('category')==='Outra'?val('otherCategory'):val('category')),contact:val('contact'),notes:val('notes'),relevance:val('relevance'),partnership:val('partnership'),nextStep:val('nextStep'),photos:[...photos],audioData:audioData};
-  await addVisit(visit);
-  alert('Visita guardada.');
-  clearForm(); renderVisits();
- }catch(e){alert('Erro ao guardar a visita: '+e.message)}
-};
-
-async function renderVisits(){
- const vs=await allVisits();document.getElementById('count').textContent=vs.length+' visita(s)';
- const box=document.getElementById('visits');box.innerHTML='';
- vs.slice().reverse().forEach(v=>{
-  const d=document.createElement('div');d.className='card visit';
-  d.innerHTML='<b>'+(v.code||'Sem código')+' — '+(v.company||'Sem empresa')+'</b><div class="small">'+(v.stand||'')+' · '+new Date(v.createdAt).toLocaleString()+'</div><p>'+escapeHtml(v.notes||'')+'</p>';
-  if(v.audioData){const a=document.createElement('audio');a.controls=true;a.src=v.audioData;d.appendChild(a)}
-  (v.photos||[]).forEach(p=>{const im=document.createElement('img');im.className='preview';im.src=p;d.appendChild(im)});
-  box.appendChild(d);
+async function renderList(){
+ const vs=await allVisits();vs.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));$('visitCount').textContent=vs.length+' visita(s) guardada(s)';
+ $('visitList').innerHTML='';
+ vs.forEach(v=>{
+  const d=document.createElement('div');d.className='visit';
+  d.innerHTML='<strong>'+(v.code||'—')+' · '+(v.company||'Sem empresa')+'</strong><div class="small">'+(v.stand||'')+' · '+(v.hall||'')+' · '+(v.category||'')+'</div><div style="margin-top:6px">'+(v.notes||'').slice(0,180)+'</div>';
+  const row=document.createElement('div');row.className='row';
+  const edit=document.createElement('button');edit.className='secondary';edit.textContent='Editar';edit.onclick=()=>loadVisit(v);
+  const del=document.createElement('button');del.className='danger';del.textContent='Apagar';del.onclick=async()=>{if(confirm('Apagar esta visita?')){await deleteVisit(v.id);renderList()}};
+  row.append(edit,del);d.appendChild(row);$('visitList').appendChild(d);
  });
 }
-function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function loadVisit(v){
+ editingId=v.id; $('code').value=v.code||'';$('stand').value=v.stand||'';$('company').value=v.company||'';$('hall').value=v.hall||'';
+ const opts=[...$('category').options].map(o=>o.value); if(opts.includes(v.category)){$('category').value=v.category;$('otherWrap').classList.add('hidden')}else{$('category').value='Outra';$('otherCategory').value=v.category||'';$('otherWrap').classList.remove('hidden')}
+ $('contact').value=v.contact||'';$('notes').value=v.notes||'';$('relevance').value=v.relevance||'Alta';$('partnership').value=v.partnership||'Alto';$('nextStep').value=v.nextStep||'';
+ photos=v.photos||[];audioData=v.audioData||null;renderPhotos();
+ if(audioData){$('audioPreview').src=audioData;$('audioPreview').classList.remove('hidden');$('audioStatus').textContent='Áudio guardado.'}else{$('audioPreview').classList.add('hidden');$('audioStatus').textContent=''}
+ window.scrollTo({top:0,behavior:'smooth'});
+}
 
-document.getElementById('clearBtn').onclick=clearForm;
-document.getElementById('exportBtn').onclick=async()=>{
- const vs=await allVisits();
- const blob=new Blob([JSON.stringify({app:'BATIMAT 2026',version:5,exportedAt:new Date().toISOString(),visits:vs},null,2)],{type:'application/json'});
- const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='BATIMAT_2026_visitas.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+// Minimal ZIP writer (STORE, no compression), self-contained and offline.
+const enc=new TextEncoder();
+function crc32(bytes){let c=0^(-1);for(let i=0;i<bytes.length;i++){c=(c>>>8)^CRC[(c^bytes[i])&255]}return (c^(-1))>>>0}
+const CRC=new Uint32Array(256);(()=>{for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);CRC[n]=c>>>0}})();
+function u16(n){return new Uint8Array([n&255,(n>>>8)&255])}
+function u32(n){return new Uint8Array([n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255])}
+function concat(arrs){let n=arrs.reduce((s,a)=>s+a.length,0),o=new Uint8Array(n),p=0;for(const a of arrs){o.set(a,p);p+=a.length}return o}
+function zipStore(files){
+ const locals=[], centrals=[];let offset=0;
+ for(const f of files){
+  const name=enc.encode(f.name), data=f.data instanceof Uint8Array?f.data:new Uint8Array(f.data), crc=crc32(data);
+  const local=concat([u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name,data]);
+  locals.push(local);
+  const central=concat([u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name]);
+  centrals.push(central);offset+=local.length;
+ }
+ const cd=concat(centrals), body=concat(locals);
+ const end=concat([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cd.length),u32(body.length),u16(0)]);
+ return new Blob([body,cd,end],{type:'application/zip'});
+}
+function dataURLToBytes(s){const b64=s.split(',')[1]||'';const bin=atob(b64);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a}
+function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+function safe(s){return (s||'sem_nome').replace(/[^\wÀ-ÿ-]+/g,'_').slice(0,60)}
+
+$('zipBtn').onclick=async()=>{
+ const vs=await allVisits();if(!vs.length){alert('Não há visitas guardadas.');return}
+ const files=[], clean=[];
+ vs.sort((a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''));
+ for(let i=0;i<vs.length;i++){
+  const v=vs[i], code=safe(v.code||String(i+1).padStart(3,'0')), photosOut=[];
+  (v.photos||[]).forEach((p,j)=>{const ext=(p.match(/^data:image\/([^;]+)/)||[])[1]||'jpeg';const fn='fotos/'+code+'_'+String(j+1).padStart(2,'0')+'.'+(ext==='jpeg'?'jpg':ext);files.push({name:fn,data:dataURLToBytes(p)});photosOut.push(fn)});
+  let audioOut='';
+  if(v.audioData){audioOut='audios/'+code+'_audio.webm';files.push({name:audioOut,data:dataURLToBytes(v.audioData)})}
+  const c={...v};delete c.id;delete c.audioData;delete c.photos;c.photos=photosOut;if(audioOut)c.audio=audioOut;clean.push(c);
+ }
+ const meta={app:'BATIMAT 2026',version:6,exportedAt:new Date().toISOString(),visits:clean};
+ files.unshift({name:'visitas.json',data:enc.encode(JSON.stringify(meta,null,2))});
+ files.unshift({name:'LEIA-ME.txt',data:enc.encode('BATIMAT 2026\\n\\nExportação da aplicação V6.\\nvisitas.json contém os dados das visitas.\\nfotos/ contém as fotografias.\\naudios/ contém os áudios originais.\\n')});
+ downloadBlob(zipStore(files),'BATIMAT_2026.zip');
 };
-openDB().then(renderVisits);
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+$('jsonBtn').onclick=async()=>{
+ const vs=await allVisits();const clean=vs.map(v=>{const c={...v};delete c.id;return c});
+ downloadBlob(new Blob([JSON.stringify({app:'BATIMAT 2026',version:6,exportedAt:new Date().toISOString(),visits:clean},null,2)],{type:'application/json'}),'BATIMAT_2026_visitas.json');
+};
+openDB().then(renderList).catch(e=>alert('Erro ao abrir armazenamento: '+e));
 </script>
-</body>
-</html>
+</body></html>
