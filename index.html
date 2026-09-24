@@ -1,94 +1,162 @@
 <!doctype html>
-<html lang="pt-PT">
+<html lang="pt">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#d71920"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="./manifest.webmanifest">
 <title>BATIMAT 2026</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f5f6;color:#171717}
-header{background:#171717;color:#fff;padding:17px;position:sticky;top:0;z-index:3}header b{color:#e21b23;font-size:25px}
-main{max-width:720px;margin:auto;padding:12px}.card{background:#fff;border-radius:15px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #0001}
-h2{font-size:18px;margin:0 0 10px}label{font-weight:700;display:block;margin:12px 0 5px}
-input,textarea,select{width:100%;padding:11px;border:1px solid #ccc;border-radius:9px;font-size:16px;background:#fff}
-textarea{min-height:150px}button{border:0;border-radius:9px;padding:12px 14px;margin:5px 4px 0 0;font-size:15px;font-weight:700}
-.primary{background:#d71920;color:#fff}.dark{background:#171717;color:#fff}.soft{background:#eee}.danger{background:#fee;color:#a00}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.muted{color:#666;font-size:13px}.pill{display:inline-block;padding:5px 8px;border-radius:20px;background:#eee;margin:2px;font-size:12px}
-.photo{width:31%;height:95px;object-fit:cover;border-radius:8px;margin:1%}.item{border-top:1px solid #ddd;padding:12px 0}
-audio{width:100%;margin-top:10px}.recording{padding:10px;background:#f7f7f7;border-radius:9px;margin-top:8px}
-@media(max-width:500px){.grid{grid-template-columns:1fr}}
-</style></head>
+body{font-family:Arial,sans-serif;margin:0;background:#f3f4f6;color:#111827}
+header{background:#111827;color:white;padding:18px}
+main{padding:14px;max-width:760px;margin:auto}
+.card{background:white;border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 1px 4px #0002}
+label{display:block;font-weight:700;margin-top:10px}
+input,textarea,select{box-sizing:border-box;width:100%;padding:10px;margin-top:5px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px}
+textarea{min-height:120px}
+button{border:0;border-radius:9px;padding:11px 14px;margin:7px 4px 0 0;font-size:16px;font-weight:700}
+.primary{background:#111827;color:white}.secondary{background:#e5e7eb}.danger{background:#fee2e2;color:#991b1b}
+.visit{border-left:5px solid #111827}
+.small{font-size:13px;color:#64748b}
+audio{width:100%;margin-top:8px}
+img.preview{width:100%;max-height:300px;object-fit:cover;border-radius:8px;margin-top:8px}
+.hidden{display:none}
+</style>
+</head>
 <body>
-<header><b>BATIMAT</b> 2026<br><small>Offsite · Pré-fabricação · DFMA · Industrialização</small></header>
+<header><h1>BATIMAT 2026</h1><div>Registo de visitas</div></header>
 <main>
 <div class="card">
 <h2>Nova visita</h2>
-<div class="grid"><div><label>Código</label><input id="code" placeholder="BAT-001"></div><div><label>Stand</label><input id="stand" placeholder="H1-R010"></div></div>
-<label>Empresa *</label><input id="company" placeholder="Nome da empresa">
-<label>Pavilhão / área</label><input id="hall" placeholder="H1 · Offsite">
-<label>Categoria</label><select id="area"><option>Offsite / modular</option><option>Pré-fabricação</option><option>DFMA / pré-construção</option><option>Fachadas</option><option>Estruturas</option><option>MEP / racks / shafts</option><option>Pods / casas de banho</option><option>BIM / digital</option><option>Robótica / automação</option><option>Outro</option></select>
+<label>Código</label><input id="code" placeholder="Ex.: A01">
+<label>Stand</label><input id="stand" placeholder="Ex.: H1-R010">
+<label>Empresa</label><input id="company">
+<label>Hall / área</label><input id="hall">
+<label>Categoria</label><input id="category">
+<label>Contacto / pessoa</label><input id="contact">
+<label>Notas</label>
+<textarea id="notes" placeholder="Escreva ou use o microfone do teclado Samsung para ditar."></textarea>
+<label>Relevância</label>
+<select id="relevance"><option>Alta</option><option>Média</option><option>Baixa</option></select>
+<label>Potencial de parceria</label>
+<select id="partnership"><option>Alto</option><option>Médio</option><option>Baixo</option></select>
+<label>Próximo passo</label><input id="nextStep">
 
-<label>Contacto / pessoa</label><input id="contact" placeholder="Nome, email, telefone, QR...">
-
-<h2 style="margin-top:20px">Impressões</h2>
-<textarea id="notes" placeholder="Ex.: O que fazem, o que me interessou, aplicabilidade à Gabriel Couto, potencial parceria, próximos passos..."></textarea>
-<button class="dark" id="recBtn" onclick="toggleRec()">🎙️ Gravar áudio</button>
-<div id="recStatus" class="muted"></div>
-<div id="recordings"></div>
-
-<label>Relevância para Gabriel Couto</label><select id="rel"><option>Alta</option><option>Média</option><option>Baixa</option><option>A avaliar</option></select>
-<label>Potencial de parceria</label><select id="partner"><option>Sim</option><option>Talvez</option><option>Não</option><option>A avaliar</option></select>
-<label>Próximo passo</label><select id="next"><option>Contactar</option><option>Pedir documentação</option><option>Pesquisar</option><option>Sem ação</option><option>A avaliar</option></select>
-
-<label>Fotografias</label>
-<div class="muted">Stand/logótipo · produto · detalhe construtivo · painel técnico · aplicação/projeto · produção/equipamento</div>
-<input id="photos" type="file" accept="image/*" capture="environment" multiple><div id="gallery"></div>
-
-<button class="primary" onclick="save()">💾 Guardar visita</button><button class="soft" onclick="resetForm()">➕ Nova</button>
+<div>
+<button class="secondary" id="photoBtn">📷 Adicionar foto</button>
+<input class="hidden" id="photoInput" type="file" accept="image/*" capture="environment">
 </div>
 
-<div class="card"><h2>Visitas guardadas</h2><div id="list"></div><button class="dark" onclick="exportJSON()">⬇️ Exportar dados</button></div>
+<div>
+<button class="secondary" id="recordBtn">🎙️ Gravar áudio</button>
+<button class="danger hidden" id="stopBtn">⏹️ Parar gravação</button>
+</div>
+<div id="audioStatus" class="small"></div>
+<div id="audioBox"></div>
+
+<button class="primary" id="saveBtn">💾 Guardar visita</button>
+<button class="secondary" id="clearBtn">Limpar</button>
+</div>
+
+<div class="card">
+<h2>Visitas guardadas</h2>
+<div id="count" class="small">0 visitas</div>
+<div id="visits"></div>
+<button class="secondary" id="exportBtn">⬇️ Exportar JSON</button>
+</div>
 </main>
 
 <script>
-let imgs=[], recorder=null, chunks=[], audioUrls=[], audioData=[]; 
-const DB_NAME="batimat26db", DB_STORE="visits";
-function dbOpen(){return new Promise((resolve,reject)=>{const r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=()=>r.result.createObjectStore(DB_STORE,{keyPath:"code"});r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
-async function dbPut(v){const db=await dbOpen();return new Promise((resolve,reject)=>{const t=db.transaction(DB_STORE,"readwrite");t.objectStore(DB_STORE).put(v);t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
-async function dbAll(){const db=await dbOpen();return new Promise((resolve,reject)=>{const t=db.transaction(DB_STORE,"readonly"),r=t.objectStore(DB_STORE).getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error)})}
-async function dbDelete(code){const db=await dbOpen();return new Promise((resolve,reject)=>{const t=db.transaction(DB_STORE,"readwrite");t.objectStore(DB_STORE).delete(code);t.oncomplete=resolve;t.onerror=()=>reject(t.error)})}
-function blobToDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob)})}
-const $=id=>document.getElementById(id);
+const DB='batimat26db', STORE='visits';
+let db, photos=[], audioData=null, recorder=null, chunks=[], stream=null;
 
-$("photos").onchange=e=>{imgs=[];[...e.target.files].forEach(f=>{let r=new FileReader();r.onload=()=>{imgs.push({name:f.name,data:r.result});gallery()};r.readAsDataURL(f)})};
-function gallery(){ $("gallery").innerHTML=imgs.map(x=>`<img class="photo" src="${x.data}">`).join("") }
+function openDB(){
+ return new Promise((resolve,reject)=>{
+  const r=indexedDB.open(DB,1);
+  r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains(STORE)) e.target.result.createObjectStore(STORE,{keyPath:'id',autoIncrement:true});};
+  r.onsuccess=e=>{db=e.target.result;resolve(db)};
+  r.onerror=e=>reject(e);
+ });
+}
+function tx(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE)}
+function allVisits(){return new Promise((res,rej)=>{let r=tx().getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
+function addVisit(v){return new Promise((res,rej)=>{let r=tx('readwrite').add(v);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 
-async function toggleRec(){
- if(recorder && recorder.state==="recording"){recorder.stop();return}
- if(!navigator.mediaDevices?.getUserMedia){alert("A gravação de áudio precisa de HTTPS e de um navegador compatível. Depois de instalar a app pelo link HTTPS, esta função ficará disponível.");return}
+function val(id){return document.getElementById(id).value}
+function clearForm(){
+ ['code','stand','company','hall','category','contact','notes','nextStep'].forEach(id=>document.getElementById(id).value='');
+ document.getElementById('relevance').value='Alta';document.getElementById('partnership').value='Alto';
+ photos=[];audioData=null;document.getElementById('audioBox').innerHTML='';document.getElementById('audioStatus').textContent='';
+}
+
+document.getElementById('photoBtn').onclick=()=>document.getElementById('photoInput').click();
+document.getElementById('photoInput').onchange=async e=>{
+ const f=e.target.files[0]; if(!f)return;
+ const reader=new FileReader();reader.onload=()=>{photos.push(reader.result);renderPhotoPreview();};reader.readAsDataURL(f);
+};
+function renderPhotoPreview(){
+ document.getElementById('audioBox').insertAdjacentHTML('beforebegin',
+  photos.length?'<div class="small">Fotos adicionadas: '+photos.length+'</div>':'');
+}
+
+document.getElementById('recordBtn').onclick=async()=>{
  try{
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  recorder=new MediaRecorder(stream);chunks=[];
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('O navegador não disponibiliza gravação de áudio.');
+  stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  const mime=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';
+  recorder=new MediaRecorder(stream,{mimeType:mime});chunks=[];
   recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
   recorder.onstop=()=>{
-   stream.getTracks().forEach(t=>t.stop());
-   const blob=new Blob(chunks,{type:recorder.mimeType||"audio/webm"});
-   const url=URL.createObjectURL(blob); audioUrls.push(url);
-   const dataUrl=await blobToDataURL(blob); audioData.push({name:safeName()+"_nota-"+audioData.length+".webm",data:dataUrl});
-   const idx=audioUrls.length;
-   $("recordings").insertAdjacentHTML("beforeend",`<div class="recording"><b>Nota de voz ${idx}</b><audio controls src="${url}"></audio><br><a download="${safeName()}_nota-${idx}.webm" href="${url}">⬇️ Guardar áudio</a></div>`);
-   $("recBtn").textContent="🎙️ Gravar áudio";$("recStatus").textContent="Gravação concluída e associada à visita.";
+   const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});
+   const reader=new FileReader();
+   reader.onload=()=>{audioData=reader.result;document.getElementById('audioBox').innerHTML='<audio controls src="'+audioData+'"></audio>';document.getElementById('audioStatus').textContent='Áudio gravado. Agora prima “Guardar visita”.';};
+   reader.readAsDataURL(blob);
+   if(stream)stream.getTracks().forEach(t=>t.stop());
   };
-  recorder.start();$("recBtn").textContent="⏹ Parar gravação";$("recStatus").textContent="A gravar… fala normalmente.";
- }catch(e){alert("Não foi possível aceder ao microfone. Verifica a permissão do Chrome para o microfone.");}
+  recorder.start();
+  document.getElementById('recordBtn').classList.add('hidden');
+  document.getElementById('stopBtn').classList.remove('hidden');
+  document.getElementById('audioStatus').textContent='A gravar…';
+ }catch(e){
+  document.getElementById('audioStatus').textContent='Não foi possível gravar: '+e.message;
+ }
+};
+document.getElementById('stopBtn').onclick=()=>{
+ if(recorder && recorder.state!=='inactive') recorder.stop();
+ document.getElementById('stopBtn').classList.add('hidden');
+ document.getElementById('recordBtn').classList.remove('hidden');
+};
+
+document.getElementById('saveBtn').onclick=async()=>{
+ try{
+  const visit={createdAt:new Date().toISOString(),code:val('code'),stand:val('stand'),company:val('company'),hall:val('hall'),category:val('category'),contact:val('contact'),notes:val('notes'),relevance:val('relevance'),partnership:val('partnership'),nextStep:val('nextStep'),photos:[...photos],audioData:audioData};
+  await addVisit(visit);
+  alert('Visita guardada.');
+  clearForm(); renderVisits();
+ }catch(e){alert('Erro ao guardar a visita: '+e.message)}
+};
+
+async function renderVisits(){
+ const vs=await allVisits();document.getElementById('count').textContent=vs.length+' visita(s)';
+ const box=document.getElementById('visits');box.innerHTML='';
+ vs.slice().reverse().forEach(v=>{
+  const d=document.createElement('div');d.className='card visit';
+  d.innerHTML='<b>'+(v.code||'Sem código')+' — '+(v.company||'Sem empresa')+'</b><div class="small">'+(v.stand||'')+' · '+new Date(v.createdAt).toLocaleString()+'</div><p>'+escapeHtml(v.notes||'')+'</p>';
+  if(v.audioData){const a=document.createElement('audio');a.controls=true;a.src=v.audioData;d.appendChild(a)}
+  (v.photos||[]).forEach(p=>{const im=document.createElement('img');im.className='preview';im.src=p;d.appendChild(im)});
+  box.appendChild(d);
+ });
 }
-function safeName(){return ($("code").value||"BAT-visit")+"_"+($("company").value||"empresa").replace(/[^a-zA-Z0-9À-ÿ_-]+/g,"-")}
-async function data(){return {code:$("code").value||"BAT-"+Date.now(),stand:$("stand").value,company:$("company").value,hall:$("hall").value,area:$("area").value,contact:$("contact").value,notes:$("notes").value,rel:$("rel").value,partner:$("partner").value,next:$("next").value,images:imgs,audios:audioData,date:new Date().toISOString()}}
-async function save(){let v=await data();if(!v.company){alert("Indica a empresa.");return}await dbPut(v);await render();alert("Visita guardada, incluindo as notas de voz.");}
-async function render(){let a=await dbAll();$("list").innerHTML=a.length?a.map((v,i)=>`<div class="item"><b>${v.code} — ${v.company}</b><br><span class="pill">${v.area}</span><span class="pill">Parceria: ${v.partner}</span><span class="pill">${v.next}</span><br><button class="soft" onclick="loadV('${v.code}')">Abrir</button><button class="danger" onclick="delV('${v.code}')">Apagar</button></div>`).join(""):"<div class='muted'>Nenhuma visita guardada.</div>"}
-async function loadV(codeVal){let a=await dbAll(),v=a.find(x=>x.code===codeVal);if(!v)return;$("code").value=v.code;$("stand").value=v.stand;$("company").value=v.company;$("hall").value=v.hall;$("area").value=v.area;$("contact").value=v.contact;$("notes").value=v.notes;$("rel").value=v.rel;$("partner").value=v.partner;$("next").value=v.next;imgs=v.images||[];audioData=v.audios||[];gallery();$("recordings").innerHTML="";audioUrls=[];audioData.forEach((a,i)=>{$("recordings").insertAdjacentHTML("beforeend",`<div class="recording"><b>Nota de voz ${i+1}</b><audio controls src="${a.data}"></audio><br><a download="${a.name}" href="${a.data}">⬇️ Guardar áudio</a></div>`)});scrollTo(0,0)}
-async function delV(codeVal){await dbDelete(codeVal);await render()}
-function resetForm(){["code","stand","company","hall","contact","notes"].forEach(id=>$(id).value="");imgs=[];audioData=[];gallery();$("recordings").innerHTML="";audioUrls=[]}
-async function exportJSON(){let a=await dbAll();let x=document.createElement("a");x.href=URL.createObjectURL(new Blob([JSON.stringify(a)],{type:"application/json"}));x.download="BATIMAT-2026-visitas.json";x.click()}
-render();
-if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
-</script></body></html>
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+document.getElementById('clearBtn').onclick=clearForm;
+document.getElementById('exportBtn').onclick=async()=>{
+ const vs=await allVisits();
+ const blob=new Blob([JSON.stringify({app:'BATIMAT 2026',version:4,exportedAt:new Date().toISOString(),visits:vs},null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='BATIMAT_2026_visitas.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+openDB().then(renderVisits);
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body>
+</html>
