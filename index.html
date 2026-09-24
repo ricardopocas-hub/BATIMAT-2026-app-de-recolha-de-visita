@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#d71920"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg">
+<title>BATIMAT 2026</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f5f6;color:#171717}
+header{background:#171717;color:#fff;padding:17px;position:sticky;top:0;z-index:3}header b{color:#e21b23;font-size:25px}
+main{max-width:720px;margin:auto;padding:12px}.card{background:#fff;border-radius:15px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #0001}
+h2{font-size:18px;margin:0 0 10px}label{font-weight:700;display:block;margin:12px 0 5px}
+input,textarea,select{width:100%;padding:11px;border:1px solid #ccc;border-radius:9px;font-size:16px;background:#fff}
+textarea{min-height:150px}button{border:0;border-radius:9px;padding:12px 14px;margin:5px 4px 0 0;font-size:15px;font-weight:700}
+.primary{background:#d71920;color:#fff}.dark{background:#171717;color:#fff}.soft{background:#eee}.danger{background:#fee;color:#a00}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.muted{color:#666;font-size:13px}.pill{display:inline-block;padding:5px 8px;border-radius:20px;background:#eee;margin:2px;font-size:12px}
+.photo{width:31%;height:95px;object-fit:cover;border-radius:8px;margin:1%}.item{border-top:1px solid #ddd;padding:12px 0}
+audio{width:100%;margin-top:10px}.recording{padding:10px;background:#f7f7f7;border-radius:9px;margin-top:8px}
+@media(max-width:500px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header><b>BATIMAT</b> 2026<br><small>Offsite · Pré-fabricação · DFMA · Industrialização</small></header>
+<main>
+<div class="card">
+<h2>Nova visita</h2>
+<div class="grid"><div><label>Código</label><input id="code" placeholder="BAT-001"></div><div><label>Stand</label><input id="stand" placeholder="H1-R010"></div></div>
+<label>Empresa *</label><input id="company" placeholder="Nome da empresa">
+<label>Pavilhão / área</label><input id="hall" placeholder="H1 · Offsite">
+<label>Categoria</label><select id="area"><option>Offsite / modular</option><option>Pré-fabricação</option><option>DFMA / pré-construção</option><option>Fachadas</option><option>Estruturas</option><option>MEP / racks / shafts</option><option>Pods / casas de banho</option><option>BIM / digital</option><option>Robótica / automação</option><option>Outro</option></select>
+
+<label>Contacto / pessoa</label><input id="contact" placeholder="Nome, email, telefone, QR...">
+
+<h2 style="margin-top:20px">Impressões</h2>
+<div class="muted">Não precisas de escrever. Podes usar o microfone do teclado Android para ditar diretamente para este campo.</div>
+<textarea id="notes" placeholder="Ex.: O que fazem, o que me interessou, aplicabilidade à Gabriel Couto, potencial parceria, próximos passos..."></textarea>
+<button class="primary" onclick="focusNotes()">🗣️ Ditar pelo teclado</button>
+<button class="dark" id="recBtn" onclick="toggleRec()">🎙️ Gravar áudio</button>
+<div id="recStatus" class="muted"></div>
+<div id="recordings"></div>
+
+<label>Relevância para Gabriel Couto</label><select id="rel"><option>Alta</option><option>Média</option><option>Baixa</option><option>A avaliar</option></select>
+<label>Potencial de parceria</label><select id="partner"><option>Sim</option><option>Talvez</option><option>Não</option><option>A avaliar</option></select>
+<label>Próximo passo</label><select id="next"><option>Contactar</option><option>Pedir documentação</option><option>Pesquisar</option><option>Sem ação</option><option>A avaliar</option></select>
+
+<label>Fotografias</label>
+<div class="muted">Stand/logótipo · produto · detalhe construtivo · painel técnico · aplicação/projeto · produção/equipamento</div>
+<input id="photos" type="file" accept="image/*" capture="environment" multiple><div id="gallery"></div>
+
+<button class="primary" onclick="save()">💾 Guardar visita</button><button class="soft" onclick="resetForm()">➕ Nova</button>
+</div>
+
+<div class="card"><h2>Visitas guardadas</h2><div id="list"></div><button class="dark" onclick="exportJSON()">⬇️ Exportar dados</button></div>
+</main>
+
+<script>
+let imgs=[], recorder=null, chunks=[], audioUrls=[];
+const $=id=>document.getElementById(id);
+function focusNotes(){ $("notes").focus(); alert("Agora toca no 🎙️ microfone do teclado do Samsung/Android e dita a nota. Este método é o mais fiável."); }
+
+$("photos").onchange=e=>{imgs=[];[...e.target.files].forEach(f=>{let r=new FileReader();r.onload=()=>{imgs.push({name:f.name,data:r.result});gallery()};r.readAsDataURL(f)})};
+function gallery(){ $("gallery").innerHTML=imgs.map(x=>`<img class="photo" src="${x.data}">`).join("") }
+
+async function toggleRec(){
+ if(recorder && recorder.state==="recording"){recorder.stop();return}
+ if(!navigator.mediaDevices?.getUserMedia){alert("A gravação de áudio precisa de HTTPS e de um navegador compatível. Depois de instalar a app pelo link HTTPS, esta função ficará disponível.");return}
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  recorder=new MediaRecorder(stream);chunks=[];
+  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  recorder.onstop=()=>{
+   stream.getTracks().forEach(t=>t.stop());
+   const blob=new Blob(chunks,{type:recorder.mimeType||"audio/webm"});
+   const url=URL.createObjectURL(blob); audioUrls.push(url);
+   const idx=audioUrls.length;
+   $("recordings").insertAdjacentHTML("beforeend",`<div class="recording"><b>Nota de voz ${idx}</b><audio controls src="${url}"></audio><br><a download="${safeName()}_nota-${idx}.webm" href="${url}">⬇️ Guardar áudio</a></div>`);
+   $("recBtn").textContent="🎙️ Gravar áudio";$("recStatus").textContent="Gravação concluída. Guarda o áudio com o botão acima.";
+  };
+  recorder.start();$("recBtn").textContent="⏹ Parar gravação";$("recStatus").textContent="A gravar… fala normalmente.";
+ }catch(e){alert("Não foi possível aceder ao microfone. Verifica a permissão do Chrome para o microfone.");}
+}
+function safeName(){return ($("code").value||"BAT-visit")+"_"+($("company").value||"empresa").replace(/[^a-zA-Z0-9À-ÿ_-]+/g,"-")}
+function data(){return {code:$("code").value||"BAT-"+Date.now(),stand:$("stand").value,company:$("company").value,hall:$("hall").value,area:$("area").value,contact:$("contact").value,notes:$("notes").value,rel:$("rel").value,partner:$("partner").value,next:$("next").value,images:imgs,date:new Date().toISOString()}}
+function save(){let v=data();if(!v.company){alert("Indica a empresa.");return}let a=JSON.parse(localStorage.getItem("batimat26")||"[]"),i=a.findIndex(x=>x.code===v.code);if(i>=0)a[i]=v;else a.push(v);localStorage.setItem("batimat26",JSON.stringify(a));render();alert("Visita guardada.");}
+function render(){let a=JSON.parse(localStorage.getItem("batimat26")||"[]");$("list").innerHTML=a.length?a.map((v,i)=>`<div class="item"><b>${v.code} — ${v.company}</b><br><span class="pill">${v.area}</span><span class="pill">Parceria: ${v.partner}</span><span class="pill">${v.next}</span><br><button class="soft" onclick="loadV(${i})">Abrir</button><button class="danger" onclick="delV(${i})">Apagar</button></div>`).join(""):"<div class='muted'>Nenhuma visita guardada.</div>"}
+function loadV(i){let v=JSON.parse(localStorage.getItem("batimat26"))[i];$("code").value=v.code;$("stand").value=v.stand;$("company").value=v.company;$("hall").value=v.hall;$("area").value=v.area;$("contact").value=v.contact;$("notes").value=v.notes;$("rel").value=v.rel;$("partner").value=v.partner;$("next").value=v.next;imgs=v.images||[];gallery();scrollTo(0,0)}
+function delV(i){let a=JSON.parse(localStorage.getItem("batimat26"));a.splice(i,1);localStorage.setItem("batimat26",JSON.stringify(a));render()}
+function resetForm(){["code","stand","company","hall","contact","notes"].forEach(id=>$(id).value="");imgs=[];gallery();$("recordings").innerHTML="";audioUrls=[]}
+function exportJSON(){let a=localStorage.getItem("batimat26")||"[]";let x=document.createElement("a");x.href=URL.createObjectURL(new Blob([a],{type:"application/json"}));x.download="BATIMAT-2026-visitas.json";x.click()}
+render();
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script></body></html>
