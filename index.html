@@ -78,7 +78,7 @@ Pode escrever ou usar o microfone do teclado Samsung para ditar."></textarea>
     <button id="stopBtn" class="danger" type="button" disabled>⏹ Parar</button>
   </div>
   <div id="audioStatus" class="status"></div>
-  <audio id="audioPreview" controls class="hidden"></audio>
+  <div id="audioList"></div>
 
   <div class="row">
     <button id="saveBtn" class="primary" type="button">💾 Guardar visita</button>
@@ -104,7 +104,7 @@ Pode escrever ou usar o microfone do teclado Samsung para ditar."></textarea>
 
 <script>
 const DB='batimat26db', STORE='visits';
-let db, photos=[], audioData=null, recorder=null, chunks=[], editingId=null;
+let db, photos=[], audios=[], recorder=null, chunks=[], editingId=null;
 
 function openDB(){
  return new Promise((resolve,reject)=>{
@@ -122,37 +122,38 @@ $('category').onchange=()=> $('otherWrap').classList.toggle('hidden',$('category
 
 $('photos').onchange=async e=>{
  const files=[...e.target.files];
- photos=[];
  for(const f of files) photos.push(await fileToDataURL(f));
+ e.target.value='';
  renderPhotos();
 };
 function fileToDataURL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)})}
 function renderPhotos(){
  $('photoPreview').innerHTML='';
- photos.forEach((p,i)=>{const img=document.createElement('img');img.src=p;img.title='Fotografia '+(i+1);$('photoPreview').appendChild(img)});
+ photos.forEach((p,i)=>{const wrap=document.createElement('div');wrap.style='position:relative;flex:0 0 auto';const img=document.createElement('img');img.src=p;img.title='Fotografia '+(i+1);const b=document.createElement('button');b.type='button';b.textContent='×';b.title='Apagar fotografia';b.style='position:absolute;right:2px;top:2px;padding:2px 7px;min-width:auto;background:#fee2e2;color:#991b1b;border-radius:6px';b.onclick=()=>{photos.splice(i,1);renderPhotos()};wrap.append(img,b);$('photoPreview').appendChild(wrap)});
 }
 $('recordBtn').onclick=async()=>{
  try{
   const stream=await navigator.mediaDevices.getUserMedia({audio:true});
   chunks=[]; recorder=new MediaRecorder(stream);
   recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
-  recorder.onstop=async()=>{const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});audioData=await blobToDataURL(blob);$('audioPreview').src=audioData;$('audioPreview').classList.remove('hidden');$('audioStatus').textContent='Áudio gravado.';stream.getTracks().forEach(t=>t.stop())};
+  recorder.onstop=async()=>{const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});const data=await blobToDataURL(blob);audios.push({data,mime:blob.type,createdAt:new Date().toISOString()});renderAudios();$('audioStatus').textContent='Áudio gravado. Total: '+audios.length;stream.getTracks().forEach(t=>t.stop())};
   recorder.start();$('recordBtn').disabled=true;$('stopBtn').disabled=false;$('audioStatus').textContent='A gravar…';
  }catch(e){$('audioStatus').textContent='Não foi possível aceder ao microfone: '+e.message}
 };
 $('stopBtn').onclick=()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();$('recordBtn').disabled=false;$('stopBtn').disabled=true};
 function blobToDataURL(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b)})}
+function renderAudios(){const box=$('audioList');box.innerHTML='';audios.forEach((a,i)=>{const wrap=document.createElement('div');wrap.className='visit';wrap.style='margin-top:8px';const lab=document.createElement('div');lab.className='small';lab.textContent='Áudio '+(i+1);const au=document.createElement('audio');au.controls=true;au.src=a.data;const b=document.createElement('button');b.type='button';b.className='danger';b.textContent='Apagar áudio';b.style='margin-top:6px';b.onclick=()=>{audios.splice(i,1);renderAudios();$('audioStatus').textContent=audios.length?'Total: '+audios.length+' áudio(s).':'Nenhum áudio.'};wrap.append(lab,au,b);box.appendChild(wrap)});}
 
 function resetForm(){
  editingId=null;['code','stand','company','hall','contact','nextStep','otherCategory'].forEach(x=>$(x).value='');
  $('category').value='';$('relevance').value='Alta';$('partnership').value='Alto';$('notes').value='';
- photos=[];audioData=null;$('photos').value='';renderPhotos();$('audioPreview').removeAttribute('src');$('audioPreview').classList.add('hidden');$('audioStatus').textContent='';
+ photos=[];audios=[];$('photos').value='';renderPhotos();renderAudios();$('audioStatus').textContent='';
 }
 $('newBtn').onclick=resetForm;
 
 $('saveBtn').onclick=async()=>{
- const v={createdAt:editingId?undefined:new Date().toISOString(),code:$('code').value.trim(),stand:$('stand').value.trim(),company:$('company').value.trim(),hall:$('hall').value.trim(),category:catValue(),contact:$('contact').value.trim(),notes:$('notes').value,relevance:$('relevance').value,partnership:$('partnership').value,nextStep:$('nextStep').value.trim(),photos,audioData};
- if(editingId)v.id=editingId;
+ const v={createdAt:new Date().toISOString(),code:$('code').value.trim(),stand:$('stand').value.trim(),company:$('company').value.trim(),hall:$('hall').value.trim(),category:catValue(),contact:$('contact').value.trim(),notes:$('notes').value,relevance:$('relevance').value,partnership:$('partnership').value,nextStep:$('nextStep').value.trim(),photos,audios};
+ if(editingId){v.id=editingId; const old=(await allVisits()).find(x=>x.id===editingId); if(old?.createdAt) v.createdAt=old.createdAt;}
  if(!v.company && !v.stand && !v.notes){alert('Preencha pelo menos a empresa, o stand ou as notas.');return}
  await putVisit(v); resetForm(); await renderList(); alert('Visita guardada.');
 };
@@ -173,8 +174,7 @@ function loadVisit(v){
  editingId=v.id; $('code').value=v.code||'';$('stand').value=v.stand||'';$('company').value=v.company||'';$('hall').value=v.hall||'';
  const opts=[...$('category').options].map(o=>o.value); if(opts.includes(v.category)){$('category').value=v.category;$('otherWrap').classList.add('hidden')}else{$('category').value='Outra';$('otherCategory').value=v.category||'';$('otherWrap').classList.remove('hidden')}
  $('contact').value=v.contact||'';$('notes').value=v.notes||'';$('relevance').value=v.relevance||'Alta';$('partnership').value=v.partnership||'Alto';$('nextStep').value=v.nextStep||'';
- photos=v.photos||[];audioData=v.audioData||null;renderPhotos();
- if(audioData){$('audioPreview').src=audioData;$('audioPreview').classList.remove('hidden');$('audioStatus').textContent='Áudio guardado.'}else{$('audioPreview').classList.add('hidden');$('audioStatus').textContent=''}
+ photos=v.photos||[];audios=v.audios||[];if(!audios.length && v.audioData) audios=[{data:v.audioData,mime:'audio/webm',createdAt:v.createdAt||new Date().toISOString()}];renderPhotos();renderAudios();$('audioStatus').textContent=audios.length?'Total: '+audios.length+' áudio(s).':''
  window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -209,19 +209,19 @@ $('zipBtn').onclick=async()=>{
  for(let i=0;i<vs.length;i++){
   const v=vs[i], code=safe(v.code||String(i+1).padStart(3,'0')), photosOut=[];
   (v.photos||[]).forEach((p,j)=>{const ext=(p.match(/^data:image\/([^;]+)/)||[])[1]||'jpeg';const fn='fotos/'+code+'_'+String(j+1).padStart(2,'0')+'.'+(ext==='jpeg'?'jpg':ext);files.push({name:fn,data:dataURLToBytes(p)});photosOut.push(fn)});
-  let audioOut='';
-  if(v.audioData){audioOut='audios/'+code+'_audio.webm';files.push({name:audioOut,data:dataURLToBytes(v.audioData)})}
-  const c={...v};delete c.id;delete c.audioData;delete c.photos;c.photos=photosOut;if(audioOut)c.audio=audioOut;clean.push(c);
+  const audioOut=[];
+  (v.audios||[]).forEach((a,j)=>{const ext=(a.mime||'audio/webm').includes('mp4')?'m4a':'webm';const fn='audios/'+code+'_'+String(j+1).padStart(2,'0')+'.'+ext;files.push({name:fn,data:dataURLToBytes(a.data)});audioOut.push(fn)});
+  const c={...v};delete c.id;delete c.audios;delete c.audioData;delete c.photos;c.photos=photosOut;c.audios=audioOut;clean.push(c);
  }
- const meta={app:'BATIMAT 2026',version:6,exportedAt:new Date().toISOString(),visits:clean};
+ const meta={app:'BATIMAT 2026',version:7,exportedAt:new Date().toISOString(),visits:clean};
  files.unshift({name:'visitas.json',data:enc.encode(JSON.stringify(meta,null,2))});
- files.unshift({name:'LEIA-ME.txt',data:enc.encode('BATIMAT 2026\\n\\nExportação da aplicação V6.\\nvisitas.json contém os dados das visitas.\\nfotos/ contém as fotografias.\\naudios/ contém os áudios originais.\\n')});
+ files.unshift({name:'LEIA-ME.txt',data:enc.encode('BATIMAT 2026\\n\\nExportação da aplicação V7.\\nPode conter várias fotografias e vários áudios por visita.\\nvisitas.json contém os dados das visitas.\\nfotos/ contém as fotografias.\\naudios/ contém os áudios originais.\\n')});
  downloadBlob(zipStore(files),'BATIMAT_2026.zip');
 };
 
 $('jsonBtn').onclick=async()=>{
  const vs=await allVisits();const clean=vs.map(v=>{const c={...v};delete c.id;return c});
- downloadBlob(new Blob([JSON.stringify({app:'BATIMAT 2026',version:6,exportedAt:new Date().toISOString(),visits:clean},null,2)],{type:'application/json'}),'BATIMAT_2026_visitas.json');
+ downloadBlob(new Blob([JSON.stringify({app:'BATIMAT 2026',version:7,exportedAt:new Date().toISOString(),visits:clean},null,2)],{type:'application/json'}),'BATIMAT_2026_visitas.json');
 };
 openDB().then(renderList).catch(e=>alert('Erro ao abrir armazenamento: '+e));
 </script>
